@@ -1,4 +1,4 @@
-# main.py
+# app/main.py
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone, timedelta
 from uuid import UUID
@@ -154,6 +154,45 @@ def create_calculation(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+# ------------------------------------------------------------------------------
+# Operation-specific endpoints (for automated tests)
+# ------------------------------------------------------------------------------
+
+@app.post("/calculations/add", response_model=CalculationResponse, tags=["calculations"])
+def add_calculation(
+    calculation_data: CalculationBase,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    calculation_data.type = "addition"
+    return create_calculation(calculation_data, current_user, db)
+
+@app.post("/calculations/subtract", response_model=CalculationResponse, tags=["calculations"])
+def subtract_calculation(
+    calculation_data: CalculationBase,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    calculation_data.type = "subtraction"
+    return create_calculation(calculation_data, current_user, db)
+
+@app.post("/calculations/multiply", response_model=CalculationResponse, tags=["calculations"])
+def multiply_calculation(
+    calculation_data: CalculationBase,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    calculation_data.type = "multiplication"
+    return create_calculation(calculation_data, current_user, db)
+
+@app.post("/calculations/divide", response_model=CalculationResponse, tags=["calculations"])
+def divide_calculation(
+    calculation_data: CalculationBase,
+    current_user = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    calculation_data.type = "division"
+    return create_calculation(calculation_data, current_user, db)
 
 # Browse / List Calculations (for the current user)
 @app.get("/calculations", response_model=List[CalculationResponse], tags=["calculations"])
